@@ -129,8 +129,8 @@ In case of errors caught and handled by server (for example, signature is incorr
 In case of critical errors of the backend itself (for example, internal server error), the structure of response is the following:
 ```json
 {
-    "message" : "Internal server error"
-    "status" : "error",
+    "message": "Internal server error"
+    "status": "error",
 }
 ```
 - `message` contains error description;
