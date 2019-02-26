@@ -358,3 +358,50 @@ This check is optional, however it is recommended for security reasons.
 ```
 
 Request body contains transfer transaction object with current transaction status.
+
+## Identifiying user transaction
+When user wants to transfer his tokens from the wallet to the exchange account, he could just make a transaction from his account to the exchange wallet account.
+The trickier part is to match transfer from the wallet account 'alice1231' with the exchange account 'alice@example.com'.
+For networks like BitCoin and Ethereum exchanges generate uniq wallet address for each incomming transaction.
+In the Graphene/Bitshares network each wallet has only one address, so it's not possible to generate 'alias', 'temporary', 'one-off', etc. addresses.
+Nevertheless there are several ways to match transaction with the user account, that could be used.
+
+### Memo-based match (recommended)
+Each time user wants to transfer funds to his excange account you should provide him with the QR code containing following URL:
+```
+usdx:exchange-address?amount=100&currency=LHT&memo=11223344&ro=true
+```
+
+Where
+* `exchange-address` -- transaction destination address, should be your exchange wallet address.
+* `currency` -- required field, could be LHT or USDX.
+* `amount`  -- optional field, if specified provides exact amount to be send.
+* `memo` -- arbitrary string (up to 100 bytes) that will be passed along with the transaction.
+You will receive it in the callback, also you could get it from the transaction history (refer to the API reference).
+Memo should contain transferId, account id hash, or any other token that could be used later to identify user account.
+
+When user will scan provided QR code with USDX Wallet app he will be presented with "Send" screen with all the provided data filled in, and marked as read-only.
+For example, if URL
+```
+usdx:example-exchange?amount=100&currency=LHT&memo=11223344&ro=true
+```
+is provided, then user will see a "Send" screen
+with prefilled fields for destination account, memo, amount and currency, and will only have an option to submit transaction or completely decline it.
+
+If he will be provided with the URL
+```
+usdx:example-exchange?currency=LHT&memo=11223344&ro=true
+```
+then destination account and memo will be prefilled,
+but user could enter arbitrary amount of tokens he would like to send.
+
+### Exact amount transfer
+If you couldn't use previous approach, alternativelly you could ask user to send exact amount of tokens, so you will be able to identify his transaction.
+For example, if user wants to transfer 1.0 LHT, you could ask him to transfer 1.00077 LHT (LHT has precision of 5, while USDX has 2), and use `00077` as identifier of the transfer.
+This method is less convenient and reliable for sure.
+
+### One-time transfer
+You could bind user wallet account to the exchange account by asking user to make a transfer of some small amount of tokens (like 0.00001 LHT).
+This transaction should contain uniq amount or memo (as was described earlier), that will be used to match transaction with the user account.
+When transaction will be matched you could refund sum to the user.
+Each subsequent transfer from this wallet could be made without any additional authentication.
