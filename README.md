@@ -371,35 +371,49 @@ Nevertheless there is a way to match transaction with the user account.
 ### Memo-based match
 Each time user wants to transfer funds to his excange account provide him with the QR code that contains following URL:
 ```
-usdx:exchange-address?amount=100&currency=LHT&memo=11223344&ro=true
+usdx:exchange-address?amount=100&currency=LHT&memo=11223344&type=strict
 ```
 
 Where
-* `exchange-address` -- transaction destination address, should be your exchange wallet address.
-* `currency` -- required field, could be LHT or USDX.
-* `amount`  -- optional field, if specified provides exact amount to be send.
+* `exchange-address` (required) -- transaction destination address, should be your exchange wallet address.
+* `currency` (required) -- could be `"LHT"` or `"USDX"`.
+* `amount` (optional) -- if specified provides exact amount to be send.
 * `memo` -- arbitrary string (up to 100 bytes) that will be passed along with the transaction.
 You will receive it in the callback, also you could get it from the transaction history (refer to the API reference).
 Memo should contain transferId, account id hash, or any other token that you could use to identify user account later.
+* `type` -- type of the transaction, it could be:
+  * `"stritct"` -- in this case user can't change transaction details (destination, amount, memo);
+  * `"open_amount"` -- user can change amount, but can't change memo or destination;
+  * `"normal"` (default) -- no retstrictions, user can change all fields.
 
-When user will scan provided QR code with USDX Wallet app he will be presented with "Send" screen with all the provided data filled in, and marked as read-only.
+When user will scan provided QR code with USDX Wallet app he will be presented with "Send" screen with all the provided data filled in,
+some fields could be set as read-only, acording to the `type` value.
+
 For example, if URL
 ```
-usdx:example-exchange?amount=100&currency=LHT&memo=11223344&ro=true
+usdx:example-exchange?amount=100&currency=LHT&memo=11223344&type=strict
 ```
 is provided, then user will see a "Send" screen
 with prefilled fields for destination account, memo, amount and currency, and will only have an option to submit transaction or completely decline it.
 
 If he will be provided with the URL
 ```
-usdx:example-exchange?currency=LHT&memo=11223344&ro=true
+usdx:example-exchange?currency=LHT&memo=11223344&type=open_amount
 ```
 then destination account and memo will be prefilled,
 but user could enter arbitrary amount of tokens he would like to send.
 
+If `type` is set to `"normal"` or not set at all, like in
+```
+usdx:example-exchange?currency=LHT&memo=11223344
+```
+then fields will be prefilled with specified values, and user will be able to change any of them, like in normal transaction.
+You probably won't use this type.
+
 ### User experience notes
 To provide a good user experience several things should be considered:
 * Always provide user with QR code, not just memo and account name.
+* Use `type=open_amount`, so user would be able to choose arbitrary amount, but will not be able to mess up with memo and account name.
 * Provide us with the regexp that we could use to validate the memo, in case if user will decide to fill values manually.
 This way our mobile wallet will show a warning to the user, if he will try to send a transaction with wrong code in memo.
 For example it could be `/^[0-9]{7}$/` (seven arbitrary digits), or `/^ID[a-z0-9]{4}$/` ('ID' plus four lowercase alphanumeric characters).
