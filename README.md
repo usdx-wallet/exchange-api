@@ -368,7 +368,7 @@ For networks like BitCoin and Ethereum exchanges generate uniq wallet address fo
 In the Graphene/Bitshares network each wallet has only one address, so it's not possible to generate 'alias', 'temporary', 'one-off', etc. addresses.
 Nevertheless there is a way to match transaction with the user account.
 
-### Memo-based match
+### Memo-based match (using QR code)
 Each time user wants to transfer funds to his excange account provide him with the QR code that contains following URL:
 ```
 usdx:exchange-address?amount=100&currency=LHT&memo=11223344&type=strict
@@ -410,10 +410,21 @@ usdx:example-exchange?currency=LHT&memo=11223344
 then fields will be prefilled with specified values, and user will be able to change any of them, like in normal transaction.
 You probably won't use this type.
 
+### Memo-based match (using deep link)
+Some users use exchange UI on the same (mobile) device where USDX Wallet app is installed,
+this prevents them from using QR code.
+For that case we have a deep link mechanism that could be used to trigger the app with necessary parameters.
+The link looks like
+```
+https://link.usdx.cash/example-exchange?amount=100&currency=LHT&memo=11223344&type=open_amount
+```
+Parameters are the same as for QR code.
+Please, note, that you CAN'T use provided link as is, each exchange will be provided with uniq URL.
+
 ### User experience notes
 To provide a good user experience several things should be considered:
-* Always provide user with QR code, not just memo and account name.
-* Use `type=open_amount`, so user would be able to choose arbitrary amount, but will not be able to mess up with memo and account name.
+* Always provide user with both QR code and deep link.
+* Prefer `type=open_amount`, so user would be able to choose arbitrary amount, but will not be able to mess up with memo and account name.
 * Provide us with the regexp that we could use to validate the memo, in case if user will decide to fill values manually.
 This way our mobile wallet will show a warning to the user, if he will try to send a transaction with wrong code in memo.
 For example it could be `/^[0-9]{7}$/` (seven arbitrary digits), or `/^ID[a-z0-9]{4}$/` ('ID' plus four lowercase alphanumeric characters).
