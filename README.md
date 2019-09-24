@@ -37,16 +37,16 @@ All HTTP requests must be signed as specified in [Authentication section](#authe
 
 ## Authentication
 
-All API HTTP requests must contain `X-Usdx-Signature` header with request signature.
+All API HTTP requests must contain `x-usdx-signature` header with request signature.
 The signature is generated using the following steps:
 1. Take `body` of your prepared HTTP request. Body should be UTF-8 encoded. In case of empty body or `GET`-request, `body` is considered as empty string.
 2. Get current `timestamp` (in milliseconds).
 3. Take `apiKey`, API key received during registration, [see Exchange Registration](#exchange-registration).
 4. Concatenate `body` + `apiKey` + `timestamp`.
 5. Calculate SHA-256 hash of the resulted string and take hex representation of it.
-6. Set the value of `X-Usdx-Signature` header in the following format:
+6. Set the value of `x-usdx-signature` header in the following format:
 ```
-X-Usdx-Signature: t=1549022587251, v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
+x-usdx-signature: t=1549022587251, v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
 ```
 where `t` value is `timestamp` used in the calculation, `v1` value is SHA-256 hash (`v` stands for current signature schema, actual version is 1).
 
@@ -89,9 +89,9 @@ In case if it is smaller or equal to `timestamp` value used in the previous call
 ```
 9ee36fa6b574f6a6afb6525aa9857d5b083ccb5a5c0cfbc1341c135ee764956a
 ```
-6. Value of `X-Usdx-Signature` header:
+6. Value of `x-usdx-signature` header:
 ```
-X-Usdx-Signature: t=1546416133123, v1=9ee36fa6b574f6a6afb6525aa9857d5b083ccb5a5c0cfbc1341c135ee764956a
+x-usdx-signature: t=1546416133123, v1=9ee36fa6b574f6a6afb6525aa9857d5b083ccb5a5c0cfbc1341c135ee764956a
 ```
 
 ## API Endpoints Reference
@@ -144,10 +144,10 @@ The following is the list of possible `errorCode` values in case when response `
 
 |Code                          |Description
 |:-----------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SIGNATURE_NOT_SPECIFIED      | `X-Usdx-Signature` request header is absent                                                                                                                                                |
-| SIGNATURE_FORMAT_INVALID     | `X-Usdx-Signature` request header is specified, but has incorrect format                                                                                                                   |
-| TIMESTAMP_INVALID            | Timestamp specified in `X-Usdx-Signature` request header is invalid (previous API call contained larger value of timestamp)                                                                |
-| SIGNATURE_INVALID            | Signature specified in `X-Usdx-Signature` request header is invalid                                                                                                                        |
+| SIGNATURE_NOT_SPECIFIED      | `x-usdx-signature` request header is absent                                                                                                                                                |
+| SIGNATURE_FORMAT_INVALID     | `x-usdx-signature` request header is specified, but has incorrect format                                                                                                                   |
+| TIMESTAMP_INVALID            | Timestamp specified in `x-usdx-signature` request header is invalid (previous API call contained larger value of timestamp)                                                                |
+| SIGNATURE_INVALID            | Signature specified in `x-usdx-signature` request header is invalid                                                                                                                        |
 | IP_ADDRESS_INVALID           | IP address the request is coming from is not whitelisted for this exchange (only in case if exchange provided IP addresses white list, [see Exchange Registration](exchange-registration)) |
 | EXCHANGE_ID_INVALID          | Specified `exchangeId` parameter doesn't correspond to any registered exchange                                                                                                             |
 | USER_ACCOUNT_INVALID         | User account with specified name doesn't exist                                                                                                                                             |
@@ -218,7 +218,7 @@ Transfers USDX/LHT assets from exchange account to user account.
 **Headers:**
 `Content-Type: application/json`
 
-`X-Usdx-Signature: ...` ([see Authentication](#authentication))
+`x-usdx-signature: ...` ([see Authentication](#authentication))
 
 **Request body:**
 ```json
@@ -261,7 +261,7 @@ Transactions are retrieved starting from the specified transaction ID (exclusive
 **Method:** `GET`
 
 **Headers:**
-`X-Usdx-Signature: ...` ([see Authentication](#authentication))
+`x-usdx-signature: ...` ([see Authentication](#authentication))
 
 **Success response body:**
 ```json
@@ -291,7 +291,7 @@ Endpoint to get current assets balance of exchange account.
 **Method:** `GET`
 
 **Headers:**
-`X-Usdx-Signature: ...` ([see Authentication](#authentication))
+`x-usdx-signature: ...` ([see Authentication](#authentication))
 
 **Success response body:**
 ```json
@@ -318,7 +318,7 @@ Endpoint to get current transaction status by its ID.
 **Method:** `GET`
 
 **Headers:**
-`X-Usdx-Signature: ...` ([see Authentication](#authentication))
+`x-usdx-signature: ...` ([see Authentication](#authentication))
 
 **Success response body:**
 ```json
@@ -343,7 +343,7 @@ If endpoint doesn't respond at all or response status code is not 200, USDX Wall
 
 It is not guaranteed that even in case when endpoint responds with HTTP status 200, it will be called only once for one transaction. It is possible that duplicated calls will be executed, so endpoint should implement logic to handle such situations properly.
 
-Request to this endpoint contains `X-Usdx-Signature`, created by USDX Wallet API backend according to the same algorithm as used for USDX Wallet API requests ([see Authentication](#authentication)).
+Request to this endpoint contains `x-usdx-signature`, created by USDX Wallet API backend according to the same algorithm as used for USDX Wallet API requests ([see Authentication](#authentication)).
 You can check this signature to ensure that the request was really created by USDX Wallet API backend.
 This check is optional, however it is recommended for security reasons.
 
@@ -352,7 +352,7 @@ This check is optional, however it is recommended for security reasons.
 **Method:** `POST`
 
 **Headers:**
-`X-Usdx-Signature: ...` ([see Authentication](#authentication))
+`x-usdx-signature: ...` ([see Authentication](#authentication))
 
 **Request body:**
 ```
