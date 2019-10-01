@@ -71,7 +71,7 @@ In case if it is smaller or equal to `timestamp` value used in the previous call
 ```
 2. Current `timestamp` (in milliseconds) is `1546416133123`.
 3. `apiKey` is `a1b2c3d4e5f6g7h8`.
-4. Result of `body` + `timestamp` + `apiKey` concatenation:
+4. Result of `body` + `apiKey` + `timestamp` concatenation:
 ```json
 {
     "transferId" : "abcdef0123456789abcdef0123456789",
