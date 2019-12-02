@@ -428,3 +428,6 @@ To provide a good user experience several things should be considered:
 * Provide us with the regexp that we could use to validate the memo, in case if user will decide to fill values manually.
 This way our mobile wallet will show a warning to the user, if he will try to send a transaction with wrong code in memo.
 For example it could be `/^[0-9]{7}$/` (seven arbitrary digits), or `/^ID[a-z0-9]{4}$/` ('ID' plus four lowercase alphanumeric characters).
+* API would reject transactions between exchange accounts, so it's a good idea to warn the user if he's trying to withdraw to the
+account matching `/^usdx-exchange-.*$/` pattern.
+You could find corresponding texts and motivation in our [FAQ](https://usdxwallet.zendesk.com/hc/en-us/articles/360010477580-Why-can-t-I-send-transactions-from-one-exchange-to-another-).
